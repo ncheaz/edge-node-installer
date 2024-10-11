@@ -295,7 +295,7 @@ nvm exec 22 npm install
 # **************** KA MINING API SETUP ****************
 echo "Setting up KA Mining API Service..."
 
-git clone $edge_node_knowledge-mining /root/ka-mining-api
+git clone $edge_node_knowledge_mining /root/ka-mining-api
 cd /root/ka-mining-api
 git checkout main
 
