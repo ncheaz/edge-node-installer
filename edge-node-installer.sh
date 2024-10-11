@@ -2,7 +2,7 @@
 
 
 #configure edge-node components github repositories
-edge_node_knowledge-mining="https://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@github.com/OriginTrail/edge-node-knowledge-mining.git"
+edge_node_knowledge_mining="https://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@github.com/OriginTrail/edge-node-knowledge-mining.git"
 edge_node_auth_service="https://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@github.com/OriginTrail/edge-node-authentication-service.git"
 edge_node_drag="https://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@github.com/OriginTrail/edge-node-drag.git"
 edge_node_api="https://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@github.com/OriginTrail/edge-node-api.git"
@@ -295,7 +295,7 @@ nvm exec 22 npm install
 # **************** KA MINING API SETUP ****************
 echo "Setting up KA Mining API Service..."
 
-git clone $edge_node_knowledge-mining /root/ka-mining-api
+git clone $edge_node_knowledge_mining /root/ka-mining-api
 cd /root/ka-mining-api
 git checkout main
 
