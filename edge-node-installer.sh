@@ -2,11 +2,11 @@
 
 
 #configure edge-node components github repositories
-edge_node_ka_mining_api_repo="https://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@github.com/OriginTrail/edge-node-knowledge-mining.git"
-edge_node_auth_service_repo="https://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@github.com/OriginTrail/edge-node-authentication-service.git"
-edge_node_drag_api_repo="https://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@github.com/OriginTrail/edge-node-drag.git"
-edge_node_backend_repo="https://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@github.com/OriginTrail/edge-node-api.git"
-edge_node_ui_repo="https://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@github.com/OriginTrail/edge-node-interface.git"
+edge_node_knowledge-mining="https://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@github.com/OriginTrail/edge-node-knowledge-mining.git"
+edge_node_auth_service="https://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@github.com/OriginTrail/edge-node-authentication-service.git"
+edge_node_drag="https://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@github.com/OriginTrail/edge-node-drag.git"
+edge_node_api="https://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@github.com/OriginTrail/edge-node-api.git"
+edge_node_interface="https://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@github.com/OriginTrail/edge-node-interface.git"
 
 
 OTNODE_DIR="/root/ot-node"
@@ -42,7 +42,7 @@ echo "alias otnode-config='nano ~/ot-node/.origintrail_noderc'" >> ~/.bashrc
     nvm alias default 20 > /dev/null 2>&1
     sudo ln -s $(which node) /usr/bin/ > /dev/null 2>&1
     sudo ln -s $(which npm) /usr/bin/ > /dev/null 2>&1
-    
+
 
 
 # Setting up node directory:
@@ -147,7 +147,7 @@ python --version
 echo "Setting up Authentication Service..."
 
 cd /root
-git clone $edge_node_auth_service_repo /root/edge-node-auth-service
+git clone $edge_node_auth_service /root/edge-node-auth-service
 cd /root/edge-node-auth-service
 git checkout main
 
@@ -184,7 +184,7 @@ yes | npx sequelize-cli db:seed:all
 echo "Setting up Backend Service..."
 
 cd /root
-git clone $edge_node_backend_repo /root/edge-node-backend
+git clone $edge_node_api /root/edge-node-backend
 cd /root/edge-node-backend
 git checkout main
 
@@ -222,7 +222,7 @@ npx sequelize-cli db:migrate
 # **************** EDGE NODE UI SETUP ****************
 echo "Setting up Edge Node UI..."
 
-git clone $edge_node_ui_repo /var/www/edge-node-ui
+git clone $edge_node_interface /var/www/edge-node-ui
 cd /var/www/edge-node-ui
 git checkout main
 
@@ -265,7 +265,7 @@ nginx -t && systemctl restart nginx
 echo "Setting up dRAG API Service..."
 
 cd /root
-git clone $edge_node_drag_api_repo /root/drag-api
+git clone $edge_node_drag /root/drag-api
 cd /root/drag-api
 git checkout main
 
@@ -295,7 +295,7 @@ nvm exec 22 npm install
 # **************** KA MINING API SETUP ****************
 echo "Setting up KA Mining API Service..."
 
-git clone $edge_node_ka_mining_api_repo /root/ka-mining-api
+git clone $edge_node_knowledge-mining /root/ka-mining-api
 cd /root/ka-mining-api
 git checkout main
 
@@ -516,6 +516,6 @@ systemctl status airflow-scheduler.service
 systemctl status airflow-webserver.service
 systemctl status drag-api.service
 source ~/.bashrc
- 
+
 
 
