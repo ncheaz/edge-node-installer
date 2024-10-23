@@ -73,11 +73,11 @@ fi
 
 
 #configure edge-node components github repositories
-edge_node_knowledge_mining="https://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@github.com/OriginTrail/edge-node-knowledge-mining.git"
-edge_node_auth_service="https://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@github.com/OriginTrail/edge-node-authentication-service.git"
-edge_node_drag="https://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@github.com/OriginTrail/edge-node-drag.git"
-edge_node_api="https://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@github.com/OriginTrail/edge-node-api.git"
-edge_node_interface="https://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@github.com/OriginTrail/edge-node-interface.git"
+edge_node_knowledge_mining="https://github.com/OriginTrail/edge-node-knowledge-mining.git"
+edge_node_auth_service="https://github.com/OriginTrail/edge-node-authentication-service.git"
+edge_node_drag="https://github.com/OriginTrail/edge-node-drag.git"
+edge_node_api="https://github.com/OriginTrail/edge-node-api.git"
+edge_node_interface="https://github.com/OriginTrail/edge-node-interface.git"
 
 
 OTNODE_DIR="/root/ot-node"
