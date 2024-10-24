@@ -120,7 +120,7 @@ echo "alias otnode-config='nano ~/ot-node/.origintrail_noderc'" >> ~/.bashrc
         ARCHIVE_REPOSITORY_URL="github.com/OriginTrail/ot-node/archive"
         BRANCH="v8/release/testnet"
         BRANCH_DIR="/root/ot-node-8-release-testnet"
-
+        cd /root
         wget https://$ARCHIVE_REPOSITORY_URL/$BRANCH.zip
         unzip *.zip
         rm *.zip
