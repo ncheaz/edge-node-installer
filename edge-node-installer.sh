@@ -1,12 +1,83 @@
 #!/bin/sh
 
+# Check if script is run as root
+if [ "$(id -u)" != "0" ]; then
+    echo "This script must be run as root. Please switch to the root user and try again."
+    exit 1
+fi
+
+# Function to check the Ubuntu version
+check_ubuntu_version() {
+    # Get the Ubuntu version
+    ubuntu_version=$(lsb_release -rs)
+
+    # Supported versions
+    supported_versions=("20.04" "22.04" "24.04")
+
+    # Check if the current Ubuntu version is supported
+    if [[ " ${supported_versions[@]} " =~ " ${ubuntu_version} " ]]; then
+        echo "✔️ Supported Ubuntu version detected: $ubuntu_version"
+    else
+        echo -e "\n❌ Unsupported Ubuntu version detected: $ubuntu_version"
+        echo "This installer only supports the following Ubuntu versions:"
+        echo "20.04, 22.04, and 24.04."
+        echo "Please install the script on a supported version of Ubuntu."
+        exit 1
+    fi
+}
+
+# Call the check function
+check_ubuntu_version
+
+# DKG-node folder check
+OTNODE_DIR="/root/ot-node"
+
+if [ -d "$OTNODE_DIR" ]; then
+    echo -e "\n⚠️  The DKG Node directory '$OTNODE_DIR' already exists."
+    echo "Please choose one of the following options before continuing:"
+    echo "1) Delete the existing directory and proceed with installation."
+    echo "2) Create a backup of the existing directory and proceed with installation."
+    echo "3) Abort the installation."
+    
+    while true; do
+        read -p "Enter your choice (1/2/3) [default: 3]: " choice
+        choice=${choice:-3}  # Default to '3' (Abort) if the user presses Enter without input
+
+        case "$choice" in
+            1)
+                echo "Deleting the existing directory '$OTNODE_DIR'..."
+                rm -rf "$OTNODE_DIR"
+                echo "Directory deleted. Proceeding with installation."
+                break
+                ;;
+            2)
+                echo "Creating a backup of the existing directory..."
+                timestamp=$(date +"%Y%m%d%H%M%S")
+                backup_dir="/root/ot-node_backup_$timestamp"
+                mv "$OTNODE_DIR" "$backup_dir"
+                echo "Backup created at: $backup_dir"
+                echo "Proceeding with installation."
+                break
+                ;;
+            3)
+                echo "Installation aborted."
+                exit 1
+                ;;
+            *)
+                echo -e "\n❌ Invalid choice. Please enter 1, 2, or 3."
+                ;;
+        esac
+    done
+fi
+
+
 
 #configure edge-node components github repositories
-edge_node_knowledge_mining="https://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@github.com/OriginTrail/edge-node-knowledge-mining.git"
-edge_node_auth_service="https://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@github.com/OriginTrail/edge-node-authentication-service.git"
-edge_node_drag="https://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@github.com/OriginTrail/edge-node-drag.git"
-edge_node_api="https://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@github.com/OriginTrail/edge-node-api.git"
-edge_node_interface="https://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@github.com/OriginTrail/edge-node-interface.git"
+edge_node_knowledge_mining="https://github.com/OriginTrail/edge-node-knowledge-mining.git"
+edge_node_auth_service="https://github.com/OriginTrail/edge-node-authentication-service.git"
+edge_node_drag="https://github.com/OriginTrail/edge-node-drag.git"
+edge_node_api="https://github.com/OriginTrail/edge-node-api.git"
+edge_node_interface="https://github.com/OriginTrail/edge-node-interface.git"
 
 
 OTNODE_DIR="/root/ot-node"
@@ -100,8 +171,8 @@ echo "alias otnode-config='nano ~/ot-node/.origintrail_noderc'" >> ~/.bashrc
 # Export server IP
 SERVER_IP=$(hostname -I | awk '{print $1}')
 # Ensure the service uses Node.js version 22 (NVM already installed in the script above)
-nvm install 22
-nvm use 22
+nvm install 22.9.0
+nvm use 22.9.0
 
 #Deploy Redis
 sudo apt update
@@ -143,17 +214,36 @@ pyenv --version
 python --version
 
 
+# Function to check folder existence and prompt user
+check_folder() {
+    if [ -d "$1" ]; then
+        echo "Note: It is recommended to delete all directories created by any previous installer executions before running the DKG Edge Node installer. This helps to avoid potential conflicts and issues during the installation process."
+        read -p "Directory $1 already exists. Do you want to delete and clone again? (yes/no) [default: no]: " choice
+        choice=${choice:-no}  # Default to 'no' if the user presses Enter without input
+
+        if [ "$choice" == "yes" ]; then
+            rm -rf "$1"
+            echo "Directory $1 deleted."
+        else
+            echo "Skipping clone for $1."
+            return 1
+        fi
+    fi
+    return 0
+}
+
+
+
 # **************** Authentication Service Setup ****************
 echo "Setting up Authentication Service..."
 
-cd /root
-git clone $edge_node_auth_service /root/edge-node-auth-service
-cd /root/edge-node-auth-service
-git checkout main
+if check_folder "/root/edge-node-auth-service"; then
+    git clone $edge_node_auth_service /root/edge-node-auth-service
+    cd /root/edge-node-auth-service
+    git checkout main
 
-
-# Create the .env file with required variables
-cat <<EOL > /root/edge-node-auth-service/.env
+    # Create the .env file with required variables
+    cat <<EOL > /root/edge-node-auth-service/.env
 SECRET="KFRtB9qi8Npkd6fHOe6rx0jis5"
 JWT_SECRET="q2qhYVzkOMlJ51y8JAahWpzBB2PaCU5qe"
 NODE_ENV=development
@@ -167,30 +257,25 @@ UI_ENDPOINT=http://$SERVER_IP
 UI_SSL=false
 EOL
 
-# Install dependencies
-nvm exec 22 npm install
+    # Install dependencies
+    nvm exec 22.9.0 npm install
 
-# Setup database
-npm install
-yes | npx sequelize-cli db:migrate
-yes | npx sequelize-cli db:seed:all
-
-
-
+    # Setup database
+    yes | npx sequelize-cli db:migrate
+    yes | npx sequelize-cli db:seed:all
+fi
 
 
 # **************** EDGE NODE BACKEND SETUP ****************
-
 echo "Setting up Backend Service..."
 
-cd /root
-git clone $edge_node_api /root/edge-node-backend
-cd /root/edge-node-backend
-git checkout main
+if check_folder "/root/edge-node-backend"; then
+    git clone $edge_node_api /root/edge-node-backend
+    cd /root/edge-node-backend
+    git checkout main
 
-
-# Create the .env file with required variables
-cat <<EOL > /root/edge-node-backend/.env
+    # Create the .env file with required variables
+    cat <<EOL > /root/edge-node-backend/.env
 NODE_ENV=development
 DB_USERNAME=root
 DB_PASSWORD=otnodedb
@@ -199,7 +284,7 @@ DB_HOST=127.0.0.1
 DB_DIALECT=mysql
 PORT=3002
 AUTH_SERVICE_ENDPOINT=http://$SERVER_IP:3001
-UI_ENDPOINT="http://$SERVER_IP
+UI_ENDPOINT="http://$SERVER_IP"
 RUNTIME_NODE_OPERATIONAL_DB_USERNAME=root
 RUNTIME_NODE_OPERATIONAL_DB_PASSWORD=otnodedb
 RUNTIME_NODE_OPERATIONAL_DB_DATABASE=operationaldb
@@ -208,26 +293,24 @@ RUNTIME_NODE_OPERATIONAL_DB_DIALECT=mysql
 UI_SSL=false
 EOL
 
-# Install dependencies
-nvm exec 22 npm install
+    # Install dependencies
+    nvm exec 22.9.0 npm install
 
-# Setup database
-npm install
-npx sequelize-cli db:migrate
-
-
-
+    # Setup database
+    npx sequelize-cli db:migrate
+fi
 
 
 # **************** EDGE NODE UI SETUP ****************
 echo "Setting up Edge Node UI..."
 
-git clone $edge_node_interface /var/www/edge-node-ui
-cd /var/www/edge-node-ui
-git checkout main
+if check_folder "/var/www/edge-node-ui"; then
+    git clone $edge_node_interface /var/www/edge-node-ui
+    cd /var/www/edge-node-ui
+    git checkout main
 
-# Create the .env file with required variables
-cat <<EOL > /var/www/edge-node-ui/.env
+    # Create the .env file with required variables
+    cat <<EOL > /var/www/edge-node-ui/.env
 VITE_APP_URL=http://localhost:5173
 VITE_APP_NAME="Edge Node"
 VITE_AUTH_ENABLED=true
@@ -238,39 +321,39 @@ VITE_APP_ID=radiant
 BASE_URL=http://$SERVER_IP
 EOL
 
-# Build the UI
-nvm exec 22 npm install
-nvm exec 22 npm run build
+    # Build the UI
+    nvm exec 22.9.0 npm install
+    nvm exec 22.9.0 npm run build
 
-# Install and configure NGINX
-sudo apt update
-sudo apt install nginx -y
-sudo systemctl start nginx
-sudo systemctl enable nginx
+    # Install and configure NGINX
+    sudo apt update
+    sudo apt install nginx -y
+    sudo systemctl start nginx
+    sudo systemctl enable nginx
 
-# Creating a basic Nginx config for serving the UI on port 80
-NGINX_CONF="/etc/nginx/sites-available/default"
-cp $NGINX_CONF ${NGINX_CONF}.bak
+    # Creating a basic Nginx config for serving the UI on port 80
+    NGINX_CONF="/etc/nginx/sites-available/default"
+    cp $NGINX_CONF ${NGINX_CONF}.bak
 
-# Modify the root directive to point to the new directory
-sed -i 's|root /var/www/html;|root /var/www/edge-node-ui/dist;|' $NGINX_CONF
-sed -i 's|try_files $uri $uri/ =404;|try_files $uri $uri/ /index.html =404;|' $NGINX_CONF
+    # Modify the root directive to point to the new directory
+    sed -i 's|root /var/www/html;|root /var/www/edge-node-ui/dist;|' $NGINX_CONF
+    sed -i 's|try_files $uri $uri/ =404;|try_files $uri $uri/ /index.html =404;|' $NGINX_CONF
 
-# Enable and restart Nginx with the new configuration
-nginx -t && systemctl restart nginx
-
+    # Enable and restart Nginx with the new configuration
+    nginx -t && systemctl restart nginx
+fi
 
 
 # **************** DRAG API SETUP ****************
 echo "Setting up dRAG API Service..."
 
-cd /root
-git clone $edge_node_drag /root/drag-api
-cd /root/drag-api
-git checkout main
+if check_folder "/root/drag-api"; then
+    git clone $edge_node_drag /root/drag-api
+    cd /root/drag-api
+    git checkout main
 
-# Create the .env file with required variables
-cat <<EOL > /root/drag-api/.env
+    # Create the .env file with required variables
+    cat <<EOL > /root/drag-api/.env
 SERVER_PORT=5002
 NODE_ENV=production
 OT_NODE_HOSTNAME=""
@@ -282,29 +365,28 @@ DB_DIALECT=mysql
 AUTH_ENDPOINT=http://$SERVER_IP:3001
 EOL
 
-# Exec migrations
-npx sequelize-cli db:migrate
+    # Exec migrations
+    npx sequelize-cli db:migrate
 
-
-# Install dependencies
-nvm exec 22 npm install
-
-
+    # Install dependencies
+    nvm exec 22.9.0 npm install
+fi
 
 
 # **************** KA MINING API SETUP ****************
 echo "Setting up KA Mining API Service..."
 
-git clone $edge_node_knowledge_mining /root/ka-mining-api
-cd /root/ka-mining-api
-git checkout main
+if check_folder "/root/ka-mining-api"; then
+    git clone $edge_node_knowledge_mining /root/ka-mining-api
+    cd /root/ka-mining-api
+    git checkout main
 
-python3.11 -m venv .venv
-source .venv/bin/activate
-pip install -r requirements.txt
+    python3.11 -m venv .venv
+    source .venv/bin/activate
+    pip install -r requirements.txt
 
-# Create the .env file with required variables
-cat <<EOL > /root/ka-mining-api/.env
+    # Create the .env file with required variables
+    cat <<EOL > /root/ka-mining-api/.env
 PORT=5005
 PYTHON_ENV="STAGING"
 DB_USERNAME="root"
@@ -324,7 +406,7 @@ MILVUS_USERNAME=""
 MILVUS_PASSWORD=""
 MILVUS_URI=""
 EOL
-
+fi
 
 
 # **************** AIRFLOW SETUP ****************
@@ -344,6 +426,7 @@ airflow users create \
     --lastname User \
     --password admin_password
 
+# Configure Airflow settings in the airflow.cfg file
 sed -i \
 -e 's|^dags_folder *=.*|dags_folder = /root/ka-mining-api/dags|' \
 -e 's|^parallelism *=.*|parallelism = 32|' \
@@ -351,6 +434,8 @@ sed -i \
 -e 's|^max_active_runs_per_dag *=.*|max_active_runs_per_dag = 16|' \
 -e 's|^enable_xcom_pickling *=.*|enable_xcom_pickling = True|' \
 /root/airflow/airflow.cfg
+
+
 
 
 # AIRFLOW WEBSERVER sytemctl setup
@@ -516,6 +601,5 @@ systemctl status airflow-scheduler.service
 systemctl status airflow-webserver.service
 systemctl status drag-api.service
 source ~/.bashrc
-
 
 
