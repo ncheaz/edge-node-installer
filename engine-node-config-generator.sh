@@ -91,6 +91,9 @@ generate_engine_node_config() {
         RPC_ENDPOINTS=$(echo "$RPC_ENDPOINTS" | jq --arg chain "$CHAIN" --argjson rpc "$RPC_VALUES" '. + {($chain): $rpc}')
     done
 
+    # **Ensure IMPLEMENTATION is defined to prevent jq errors**
+    IMPLEMENTATION="{}"
+
     # ✅ **Final Update: Fixing `modules.blockchainEvents.implementation["ot-ethers"]`**
     jq --argjson blockchains "$BLOCKCHAINS" \
        --argjson rpcEndpoints "$RPC_ENDPOINTS" \
@@ -102,13 +105,19 @@ generate_engine_node_config() {
         .modules.blockchain.implementation = $implementation' \
        "$JSON_FILE" > "$TEMP_FILE"
 
-    # **Ensure jq output is not empty before replacing the file**
-    if [[ -s "$TEMP_FILE" ]]; then
-        mv "$TEMP_FILE" "$JSON_FILE"
-        echo "✅ Blockchain config updated correctly with only active chains."
-    else
-        echo "❌ Error: jq command failed, temp.json is empty!"
-        rm "$TEMP_FILE"
+    # **Check if jq produced valid JSON**
+    if [[ ! -s "$TEMP_FILE" ]]; then
+        echo "❌ Error: jq command failed! Debugging..."
+        echo "BLOCKCHAINS: $BLOCKCHAINS"
+        echo "RPC_ENDPOINTS: $RPC_ENDPOINTS"
+        echo "DEFAULT_IMPLEMENTATION: $DEFAULT_IMPLEMENTATION"
+        echo "IMPLEMENTATION: $IMPLEMENTATION"
+        echo "❌ Temp file is empty! jq command did not work correctly."
+        rm -f "$TEMP_FILE"
         return 1
     fi
+
+    # ✅ Replace JSON file if jq worked
+    mv "$TEMP_FILE" "$JSON_FILE"
+    echo "✅ Blockchain config updated correctly with only active chains."
 }
