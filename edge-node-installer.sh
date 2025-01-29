@@ -102,29 +102,29 @@ echo "alias otnode-logs='journalctl -u otnode --output cat -f'" >> ~/.bashrc
 echo "alias otnode-config='nano ~/ot-node/.origintrail_noderc'" >> ~/.bashrc
 
 # Installing prereqs
-        export DEBIAN_FRONTEND=noninteractive
-        NODEJS_VER="20"
-        rm -rf /var/lib/dpkg/lock-frontend
-        apt update
-        apt upgrade -y
-        apt install unzip wget jq -y
-        apt install default-jre -y
-        apt install build-essential -y
+export DEBIAN_FRONTEND=noninteractive
+NODEJS_VER="20"
+rm -rf /var/lib/dpkg/lock-frontend
+apt update
+apt upgrade -y
+apt install unzip wget jq -y
+apt install default-jre -y
+apt install build-essential -y
 
 # Install nodejs v20.18.0 (via NVM).
-    wget -qO- https://raw.githubusercontent.com/nvm-sh/nvm/v0.38.0/install.sh | bash > /dev/null 2>&1
-    export NVM_DIR="$HOME/.nvm"
-    # This loads nvm
-    [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
-    # This loads nvm bash_completion
-    [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"
-    nvm install 20 > /dev/null 2>&1
-    nvm use 20 > /dev/null 2>&1
+wget -qO- https://raw.githubusercontent.com/nvm-sh/nvm/v0.38.0/install.sh | bash > /dev/null 2>&1
+export NVM_DIR="$HOME/.nvm"
+# This loads nvm
+[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+# This loads nvm bash_completion
+[ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"
+nvm install 20 > /dev/null 2>&1
+nvm use 20 > /dev/null 2>&1
 
-    # Set nodejs v20.18.0 as default and link node to /usr/bin/
-    nvm alias default 20 > /dev/null 2>&1
-    sudo ln -s $(which node) /usr/bin/ > /dev/null 2>&1
-    sudo ln -s $(which npm) /usr/bin/ > /dev/null 2>&1
+# Set nodejs v20.18.0 as default and link node to /usr/bin/
+nvm alias default 20 > /dev/null 2>&1
+sudo ln -s $(which node) /usr/bin/ > /dev/null 2>&1
+sudo ln -s $(which npm) /usr/bin/ > /dev/null 2>&1
 
 
 
@@ -134,7 +134,7 @@ echo "alias otnode-config='nano ~/ot-node/.origintrail_noderc'" >> ~/.bashrc
 # Setting up node directory:
         ARCHIVE_REPOSITORY_URL="github.com/OriginTrail/ot-node/archive"
         BRANCH="v6/release/testnet"
-        BRANCH_DIR="/root/ot-node-8-release-testnet"
+        BRANCH_DIR="/root/ot-node-6-release-testnet"
         cd /root
         wget https://$ARCHIVE_REPOSITORY_URL/$BRANCH.zip
         unzip *.zip
@@ -150,6 +150,7 @@ echo "alias otnode-config='nano ~/ot-node/.origintrail_noderc'" >> ~/.bashrc
         # Ensure the directory exists
         mkdir -p "$CONFIG_DIR"
 
+        cd /root/edge-node-installer
         # Call the function to generate config
         generate_engine_node_config "$CONFIG_DIR"
         if [[ $? -eq 0 ]]; then
