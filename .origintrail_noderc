@@ -1,0 +1,109 @@
+{
+  "modules": {
+    "blockchainEvents": {
+      "enabled": true,
+      "implementation": {
+        "ot-ethers": {
+          "enabled": true,
+          "package": "./blockchain-events/implementation/ot-ethers/ot-ethers.js",
+          "config": {
+            "blockchains": [
+              "otp:20430",
+              "gnosis:10200"
+            ],
+            "rpcEndpoints": {
+              "otp:20430": [
+                "https://lofar-testnet.origin-trail.network",
+                "https://lofar-testnet.origintrail.network"
+              ],
+              "gnosis:10200": [
+                "https://rpc.chiado.gnosis.gateway.fm"
+              ]
+            }
+          }
+        }
+      }
+    },
+    "blockchain": {
+      "defaultImplementation": "otp:20430",
+      "implementation": {
+        "otp:20430": {
+          "config": {
+            "nodeName": "Stevan-node",
+            "operatorFee": 2,
+            "evmManagementWalletPublicKey": "0xbd8c20f047bf540c03b3b6c7af3041577f7d2cbe",
+            "operationalWallets": [
+              {
+                "evmAddress": "0x149bed5a54b95feb770b06f152601a8076124efd",
+                "privateKey": "0x1229d1f233ce0eef7b6fba5512bee0ea6dc4aecfcc5e4815bcfc818b6bd9438d"
+              }
+            ]
+          },
+          "enabled": true
+        },
+        "gnosis:10200": {
+          "config": {
+            "nodeName": "Stevan-node",
+            "operatorFee": 2,
+            "evmManagementWalletPublicKey": "0xbd8c20f047bf540c03b3b6c7af3041577f7d2cbe",
+            "operationalWallets": [
+              {
+                "evmAddress": "0x637dbda60e3a8f943c78fc10ac7cbdf311d55453",
+                "privateKey": "0x640331a4221b705422ba35041538687e2b5e20247ede46cc4ab3bbebe5c91fcf"
+              }
+            ]
+          },
+          "enabled": true
+        }
+      }
+    },
+    "tripleStore": {
+      "implementation": {
+        "ot-blazegraph": {
+          "enabled": true,
+          "package": "./triple-store/implementation/ot-blazegraph/ot-blazegraph.js",
+          "config": {
+            "repositories": {
+              "privateCurrent": {
+                "url": "http://localhost:9999",
+                "name": "private-current",
+                "username": "admin",
+                "password": ""
+              },
+              "privateHistory": {
+                "url": "http://localhost:9999",
+                "name": "private-history",
+                "username": "admin",
+                "password": ""
+              },
+              "publicCurrent": {
+                "url": "http://localhost:9999",
+                "name": "kb",
+                "username": "admin",
+                "password": ""
+              },
+              "publicHistory": {
+                "url": "http://localhost:9999",
+                "name": "public-history",
+                "username": "admin",
+                "password": ""
+              },
+              "dkg": {
+                "url": "http://localhost:9999",
+                "name": "dkg",
+                "username": "admin",
+                "password": ""
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "auth": {
+    "ipWhitelist": [
+      "::1",
+      "127.0.0.1"
+    ]
+  }
+}
