@@ -31,11 +31,11 @@
           "config": {
             "nodeName": "Stevan-node",
             "operatorFee": 2,
-            "evmManagementWalletPublicKey": "0xbd8c20f047bf540c03b3b6c7af3041577f7d2cbe",
+            "evmManagementWalletPublicKey": "",
             "operationalWallets": [
               {
-                "evmAddress": "0x149bed5a54b95feb770b06f152601a8076124efd",
-                "privateKey": "0x1229d1f233ce0eef7b6fba5512bee0ea6dc4aecfcc5e4815bcfc818b6bd9438d"
+                "evmAddress": "",
+                "privateKey": ""
               }
             ]
           },
@@ -45,11 +45,11 @@
           "config": {
             "nodeName": "Stevan-node",
             "operatorFee": 2,
-            "evmManagementWalletPublicKey": "0xbd8c20f047bf540c03b3b6c7af3041577f7d2cbe",
+            "evmManagementWalletPublicKey": "",
             "operationalWallets": [
               {
-                "evmAddress": "0x637dbda60e3a8f943c78fc10ac7cbdf311d55453",
-                "privateKey": "0x640331a4221b705422ba35041538687e2b5e20247ede46cc4ab3bbebe5c91fcf"
+                "evmAddress": "",
+                "privateKey": ""
               }
             ]
           },
