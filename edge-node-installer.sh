@@ -168,6 +168,7 @@ sudo ln -s $(which npm) /usr/bin/ > /dev/null 2>&1
 
 #Setup MySql
     apt install tcllib mysql-server -y
+    mysql -u root -p -e "ALTER USER 'root'@'localhost' IDENTIFIED WITH mysql_native_password BY '';"
     mysql -u root -e "CREATE DATABASE operationaldb /*\!40100 DEFAULT CHARACTER SET utf8 */;"
     mysql -u root -e "CREATE DATABASE \`edge-node-auth-service\`"
     mysql -u root -e "CREATE DATABASE \`edge-node-backend\`;"
@@ -185,14 +186,15 @@ sudo ln -s $(which npm) /usr/bin/ > /dev/null 2>&1
 
 #Enable services
     systemctl daemon-reload
-    systemctl enable mysql
-    systemctl status mysql
-    systemctl enable blazegraph
-    systemctl start blazegraph
-    systemctl status blazegraph
-    systemctl enable systemd-journald.service
-    systemctl restart systemd-journald.service
-    systemctl enable otnode
+    systemctl enable mysql || true
+    systemctl status mysql --no-pager || true
+    systemctl enable blazegraph || true
+    systemctl start blazegraph || true
+    systemctl status blazegraph --no-pager || true
+    echo "✅ Blazegraph checked. Continuing execution..."
+    systemctl enable systemd-journald.service || true
+    systemctl restart systemd-journald.service || true
+    systemctl enable otnode || true
 
 # Ensure the service uses Node.js version 22 (NVM already installed in the script above)
 nvm install 22.9.0
