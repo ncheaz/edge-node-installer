@@ -33,7 +33,13 @@ generate_engine_node_config() {
     # **Ensure JSON_FILE exists or create a default one**
     if [[ ! -f "$JSON_FILE" ]]; then
         echo "{}" > "$JSON_FILE"  # Create an empty JSON structure
-        echo "🆕 Created new JSON file at: $JSON_FILE"
+        echo "🆕 Created new JSON_FILE file at: $JSON_FILE"
+    fi
+
+    # **Ensure TEMP_FILE exists or create a default one**
+    if [[ ! -f "$TEMP_FILE" ]]; then
+        echo "{}" > "$TEMP_FILE"  # Create an empty JSON structure
+        echo "🆕 Created new TEMP_FILE file at: $TEMP_FILE"
     fi
 
     # Define blockchain ID arrays
@@ -93,6 +99,68 @@ generate_engine_node_config() {
 
     # **Ensure IMPLEMENTATION is defined to prevent jq errors**
     IMPLEMENTATION="{}"
+    for CHAIN in "${ACTIVE_BLOCKCHAINS[@]}"; do
+        case "$CHAIN" in
+            "otp:2043"|"otp:20430")
+                ENABLED=$NEURO_ENABLED
+                NODE_NAME="$NEUROWEB_NODE_NAME"
+                OPERATOR_FEE="${NEUROWEB_OPERATOR_FEE:-0}"
+                MANAGEMENT_WALLET="$NEUROWEB_MANAGEMENT_KEY_PUBLIC_ADDRESS"
+                OPERATIONAL_PUBLIC_KEY="$NEUROWEB_OPERATIONAL_KEY_PUBLIC_ADDRESS"
+                OPERATIONAL_PRIVATE_KEY="$NEUROWEB_OPERATIONAL_KEY_PRIVATE_ADDRESS"
+                ;;
+            "gnosis:100"|"gnosis:10200")
+                ENABLED=$GNOSIS_ENABLED
+                NODE_NAME="$GNOSIS_NODE_NAME"
+                OPERATOR_FEE="${GNOSIS_OPERATOR_FEE:-0}"
+                MANAGEMENT_WALLET="$GNOSIS_MANAGEMENT_KEY_PUBLIC_ADDRESS"
+                OPERATIONAL_PUBLIC_KEY="$GNOSIS_OPERATIONAL_KEY_PUBLIC_ADDRESS"
+                OPERATIONAL_PRIVATE_KEY="$GNOSIS_OPERATIONAL_KEY_PRIVATE_ADDRESS"
+                ;;
+            "base:8453"|"base:84532")
+                ENABLED=$BASE_ENABLED
+                NODE_NAME="$BASE_NODE_NAME"
+                OPERATOR_FEE="${BASE_OPERATOR_FEE:-0}"
+                MANAGEMENT_WALLET="$BASE_MANAGEMENT_KEY_PUBLIC_ADDRESS"
+                OPERATIONAL_PUBLIC_KEY="$BASE_OPERATIONAL_KEY_PUBLIC_ADDRESS"
+                OPERATIONAL_PRIVATE_KEY="$BASE_OPERATIONAL_KEY_PRIVATE_ADDRESS"
+                ;;
+        esac
+
+        # Ensure OPERATOR_FEE is a valid integer
+        if [[ "$OPERATOR_FEE" =~ ^[0-9]+$ ]]; then
+            OPERATOR_FEE_INT=$OPERATOR_FEE
+        else
+            OPERATOR_FEE_INT=0
+        fi
+
+        # Fetch RPC endpoints for gnosis/base if available
+        RPC_VALUES=$(echo "$RPC_SOURCE" | jq --arg chain "$CHAIN" '.[$chain] // [""]')
+
+        # Create blockchain implementation object with `operatorFee` as an integer
+        CHAIN_CONFIG=$(jq -n --arg nodeName "$NODE_NAME" \
+                              --argjson operatorFee "$OPERATOR_FEE_INT" \
+                              --arg managementWallet "$MANAGEMENT_WALLET" \
+                              --arg operationalPublic "$OPERATIONAL_PUBLIC_KEY" \
+                              --arg operationalPrivate "$OPERATIONAL_PRIVATE_KEY" \
+                              --argjson rpcEndpoints "$RPC_VALUES" \
+                              --argjson enabled "$ENABLED" \
+            '{
+                "config": {
+                    "nodeName": $nodeName,
+                    "operatorFee": $operatorFee,
+                    "evmManagementWalletPublicKey": $managementWallet,
+                    "operationalWallets": [{
+                        "evmAddress": $operationalPublic,
+                        "privateKey": $operationalPrivate
+                    }]
+                },
+                "enabled": $enabled
+            }')
+
+        # Append to implementation JSON object
+        IMPLEMENTATION=$(echo "$IMPLEMENTATION" | jq --arg chain "$CHAIN" --argjson config "$CHAIN_CONFIG" '. + {($chain): $config}')
+    done
 
     # ✅ **Final Update: Fixing `modules.blockchainEvents.implementation["ot-ethers"]`**
     jq --argjson blockchains "$BLOCKCHAINS" \
