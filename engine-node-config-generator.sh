@@ -1,6 +1,8 @@
 #!/bin/bash
 
 generate_engine_node_config() {
+    MY_IP=$(curl -s ifconfig.me)
+
     # Get the output directory from argument
     OUTPUT_DIR="$1"
 
@@ -162,14 +164,67 @@ generate_engine_node_config() {
         IMPLEMENTATION=$(echo "$IMPLEMENTATION" | jq --arg chain "$CHAIN" --argjson config "$CHAIN_CONFIG" '. + {($chain): $config}')
     done
 
+    # Define the new `tripleStore` JSON structure
+    TRIPLE_STORE=$(jq -n '{
+    "implementation": {
+        "ot-blazegraph": {
+        "enabled": true,
+        "package": "./triple-store/implementation/ot-blazegraph/ot-blazegraph.js",
+        "config": {
+            "repositories": {
+            "privateCurrent": {
+                "url": "http://localhost:9999",
+                "name": "private-current",
+                "username": "admin",
+                "password": ""
+            },
+            "privateHistory": {
+                "url": "http://localhost:9999",
+                "name": "private-history",
+                "username": "admin",
+                "password": ""
+            },
+            "publicCurrent": {
+                "url": "http://localhost:9999",
+                "name": "kb",
+                "username": "admin",
+                "password": ""
+            },
+            "publicHistory": {
+                "url": "http://localhost:9999",
+                "name": "public-history",
+                "username": "admin",
+                "password": ""
+            },
+            "dkg": {
+                "url": "http://localhost:9999",
+                "name": "dkg",
+                "username": "admin",
+                "password": ""
+            }
+            }
+        }
+        }
+    }
+    }')
+
+    # Define the `auth` JSON structure, including the dynamically added IP
+    AUTH_CONFIG=$(jq -n --arg my_ip "$MY_IP" '{
+    "ipWhitelist": ["::1", "127.0.0.1", $my_ip]
+    }')
+
     # ✅ **Final Update: Fixing `modules.blockchainEvents.implementation["ot-ethers"]`**
     jq --argjson blockchains "$BLOCKCHAINS" \
        --argjson rpcEndpoints "$RPC_ENDPOINTS" \
        --arg defaultImplementation "$DEFAULT_IMPLEMENTATION" \
        --argjson implementation "$IMPLEMENTATION" \
+       --argjson tripleStore "$TRIPLE_STORE" \
+       --argjson auth "$AUTH_CONFIG" \
        '.modules.blockchainEvents.implementation["ot-ethers"].config.blockchains = $blockchains |
         .modules.blockchainEvents.implementation["ot-ethers"].config.rpcEndpoints = $rpcEndpoints |
         .modules.blockchain.defaultImplementation = $defaultImplementation |
+        .modules.tripleStore = $tripleStore |
+        .modules.auth = $auth |
         .modules.blockchain.implementation = $implementation' \
        "$JSON_FILE" > "$TEMP_FILE"
 

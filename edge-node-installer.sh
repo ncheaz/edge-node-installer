@@ -497,9 +497,7 @@ Group=root
 WantedBy=multi-user.target
 EOL
 
-
 # Unpause DAGS
-cd /root/ka-mining-api || exit 1
 for dag_file in dags/*.py; do
     dag_name=$(basename "$dag_file" .py)
     airflow dags unpause "$dag_name"
