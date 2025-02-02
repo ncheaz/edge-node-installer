@@ -224,7 +224,7 @@ generate_engine_node_config() {
         .modules.blockchainEvents.implementation["ot-ethers"].config.rpcEndpoints = $rpcEndpoints |
         .modules.blockchain.defaultImplementation = $defaultImplementation |
         .modules.tripleStore = $tripleStore |
-        .modules.auth = $auth |
+        .auth = $auth |
         .modules.blockchain.implementation = $implementation' \
        "$JSON_FILE" > "$TEMP_FILE"
 
