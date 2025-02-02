@@ -334,7 +334,7 @@ UI_SSL=false
 EOL
 
     # Install dependencies
-    nvm exec 22.9.0 npm install
+    nvm exec 20.18.2 npm install
 
     # Setup database
     npx sequelize-cli db:migrate
@@ -436,15 +436,15 @@ DB_NAME="ka_mining_api_logging"
 DAG_FOLDER_NAME="/root/ka-mining-api/dags"
 AUTH_ENDPOINT=http://$SERVER_IP:3001
 
-OPENAI_API_KEY=$OPENAI_API_KEY
-HUGGINGFACE_API_KEY=$HUGGINGFACE_API_KEY
-UNSTRUCTURED_API_URL=""$UNSTRUCTURED_API_URL
+OPENAI_API_KEY="$OPENAI_API_KEY"
+HUGGINGFACE_API_KEY="$HUGGINGFACE_API_KEY"
+UNSTRUCTURED_API_URL="$UNSTRUCTURED_API_URL"
 
-ANTHROPIC_API_KEY=$ANTHROPIC_API_KEY
-BIONTOLOGY_KEY=$BIONTOLOGY_KEY
-MILVUS_USERNAME=$MILVUS_USERNAME
-MILVUS_PASSWORD=$MILVUS_PASSWORD
-MILVUS_URI=$MILVUS_URI
+ANTHROPIC_API_KEY="$ANTHROPIC_API_KEY"
+BIONTOLOGY_KEY="$BIONTOLOGY_KEY"
+MILVUS_USERNAME="$MILVUS_USERNAME"
+MILVUS_PASSWORD="$MILVUS_PASSWORD"
+MILVUS_URI="$MILVUS_URI"
 EOL
 fi
 
@@ -473,6 +473,7 @@ sed -i \
 -e 's|^max_active_tasks_per_dag *=.*|max_active_tasks_per_dag = 16|' \
 -e 's|^max_active_runs_per_dag *=.*|max_active_runs_per_dag = 16|' \
 -e 's|^enable_xcom_pickling *=.*|enable_xcom_pickling = True|' \
+-e 's|^load_examples *=.*|load_examples = False|' \
 /root/airflow/airflow.cfg
 
 
