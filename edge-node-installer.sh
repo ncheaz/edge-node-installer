@@ -297,7 +297,7 @@ EOL
     sed "s/localhost/$SERVER_IP/g" "$SQL_FILE" > "$TEMP_SQL_FILE"
 
     # Execute SQL file on MySQL database
-    mysql -u "root" -p "otnodedb" "edge-node-auth-service" < "$TEMP_SQL_FILE"
+    mysql -u "root" -p"otnodedb" "edge-node-auth-service" < "$TEMP_SQL_FILE"
 
     # Clean up temp file
     rm "$TEMP_SQL_FILE"
