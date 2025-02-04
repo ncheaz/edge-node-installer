@@ -6,6 +6,28 @@ if [ "$(id -u)" != "0" ]; then
     exit 1
 fi
 
+
+# Load the configuration variables
+if [ -f .env ]; then
+  source .env
+else
+  echo "Config file not found!"
+  exit 1
+fi
+
+source ./engine-node-config-generator.sh
+CONFIG_DIR="/root/ot-node"
+
+#configure edge-node components github repositories
+edge_node_knowledge_mining=$EDGE_NODE_KNOWLEDGE_MINING_REPO
+edge_node_auth_service=$EDGE_NODE_AUTH_SERVICE_REPO
+edge_node_drag=$EDGE_NODE_DRAG_REPO
+edge_node_api=$EDGE_NODE_API_REPO
+edge_node_interface=$EDGE_NODE_UI_REPO
+
+# Export server IP
+SERVER_IP=$(hostname -I | awk '{print $1}')
+
 # Function to check the Ubuntu version
 check_ubuntu_version() {
     # Get the Ubuntu version
@@ -70,16 +92,6 @@ if [ -d "$OTNODE_DIR" ]; then
     done
 fi
 
-
-
-#configure edge-node components github repositories
-edge_node_knowledge_mining="https://github.com/OriginTrail/edge-node-knowledge-mining.git"
-edge_node_auth_service="https://github.com/OriginTrail/edge-node-authentication-service.git"
-edge_node_drag="https://github.com/OriginTrail/edge-node-drag.git"
-edge_node_api="https://github.com/OriginTrail/edge-node-api.git"
-edge_node_interface="https://github.com/OriginTrail/edge-node-interface.git"
-
-
 OTNODE_DIR="/root/ot-node"
 
 #adding aliases to .bashrc:
@@ -90,36 +102,39 @@ echo "alias otnode-logs='journalctl -u otnode --output cat -f'" >> ~/.bashrc
 echo "alias otnode-config='nano ~/ot-node/.origintrail_noderc'" >> ~/.bashrc
 
 # Installing prereqs
-        export DEBIAN_FRONTEND=noninteractive
-        NODEJS_VER="20"
-        rm -rf /var/lib/dpkg/lock-frontend
-        apt update
-        apt upgrade -y
-        apt install unzip wget jq -y
-        apt install default-jre -y
-        apt install build-essential -y
+export DEBIAN_FRONTEND=noninteractive
+NODEJS_VER="20"
+rm -rf /var/lib/dpkg/lock-frontend
+apt update
+apt upgrade -y
+apt install unzip wget jq -y
+apt install default-jre -y
+apt install build-essential -y
 
 # Install nodejs v20.18.0 (via NVM).
-    wget -qO- https://raw.githubusercontent.com/nvm-sh/nvm/v0.38.0/install.sh | bash > /dev/null 2>&1
-    export NVM_DIR="$HOME/.nvm"
-    # This loads nvm
-    [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
-    # This loads nvm bash_completion
-    [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"
-    nvm install 20 > /dev/null 2>&1
-    nvm use 20 > /dev/null 2>&1
+wget -qO- https://raw.githubusercontent.com/nvm-sh/nvm/v0.38.0/install.sh | bash > /dev/null 2>&1
+export NVM_DIR="$HOME/.nvm"
+# This loads nvm
+[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+# This loads nvm bash_completion
+[ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"
+nvm install 20 > /dev/null 2>&1
+nvm use 20 > /dev/null 2>&1
 
-    # Set nodejs v20.18.0 as default and link node to /usr/bin/
-    nvm alias default 20 > /dev/null 2>&1
-    sudo ln -s $(which node) /usr/bin/ > /dev/null 2>&1
-    sudo ln -s $(which npm) /usr/bin/ > /dev/null 2>&1
+# Set nodejs v20.18.0 as default and link node to /usr/bin/
+nvm alias default 20 > /dev/null 2>&1
+sudo ln -s $(which node) /usr/bin/ > /dev/null 2>&1
+sudo ln -s $(which npm) /usr/bin/ > /dev/null 2>&1
 
 
+
+####### todo: Update ot-node branch
+####### todo: Replace add .env variables to .origintrail_noderc
 
 # Setting up node directory:
         ARCHIVE_REPOSITORY_URL="github.com/OriginTrail/ot-node/archive"
-        BRANCH="v8/release/testnet"
-        BRANCH_DIR="/root/ot-node-8-release-testnet"
+        BRANCH="v6/release/testnet"
+        BRANCH_DIR="/root/ot-node-6-release-testnet"
         cd /root
         wget https://$ARCHIVE_REPOSITORY_URL/$BRANCH.zip
         unzip *.zip
@@ -131,7 +146,18 @@ echo "alias otnode-config='nano ~/ot-node/.origintrail_noderc'" >> ~/.bashrc
         OUTPUT=$(mv $BRANCH_DIR/.* $OTNODE_DIR/$OTNODE_VERSION/ 2>&1)
         rm -rf $BRANCH_DIR
         ln -sfn $OTNODE_DIR/$OTNODE_VERSION $OTNODE_DIR/current
-        wget https://github.com/OriginTrail/ot-node/raw/v8/develop/installer/data/template/.v8_origintrail_noderc_testnet.json -O /root/ot-node/.origintrail_noderc
+
+        # Ensure the directory exists
+        mkdir -p "$CONFIG_DIR"
+
+        cd /root/edge-node-installer
+        # Call the function to generate config
+        generate_engine_node_config "$CONFIG_DIR"
+        if [[ $? -eq 0 ]]; then
+            echo "✅ Blockchain config successfully generated at $CONFIG_DIR"
+        else
+            echo "❌ Blockchain config generation failed!"
+        fi
         chmod 600 /root/ot-node/.origintrail_noderc
         cp /root/ot-node/current/installer/data/otnode.service /lib/systemd/system/
 
@@ -142,6 +168,7 @@ echo "alias otnode-config='nano ~/ot-node/.origintrail_noderc'" >> ~/.bashrc
 
 #Setup MySql
     apt install tcllib mysql-server -y
+    mysql -u root -p -e "ALTER USER 'root'@'localhost' IDENTIFIED WITH mysql_native_password BY '';"
     mysql -u root -e "CREATE DATABASE operationaldb /*\!40100 DEFAULT CHARACTER SET utf8 */;"
     mysql -u root -e "CREATE DATABASE \`edge-node-auth-service\`"
     mysql -u root -e "CREATE DATABASE \`edge-node-backend\`;"
@@ -159,17 +186,16 @@ echo "alias otnode-config='nano ~/ot-node/.origintrail_noderc'" >> ~/.bashrc
 
 #Enable services
     systemctl daemon-reload
-    systemctl enable mysql
-    systemctl status mysql
-    systemctl enable blazegraph
-    systemctl start blazegraph
-    systemctl status blazegraph
-    systemctl enable systemd-journald.service
-    systemctl restart systemd-journald.service
-    systemctl enable otnode
+    systemctl enable mysql || true
+    systemctl status mysql --no-pager || true
+    systemctl enable blazegraph || true
+    systemctl start blazegraph || true
+    systemctl status blazegraph --no-pager || true
+    echo "✅ Blazegraph checked. Continuing execution..."
+    systemctl enable systemd-journald.service || true
+    systemctl restart systemd-journald.service || true
+    systemctl enable otnode || true
 
-# Export server IP
-SERVER_IP=$(hostname -I | awk '{print $1}')
 # Ensure the service uses Node.js version 22 (NVM already installed in the script above)
 nvm install 22.9.0
 nvm use 22.9.0
@@ -187,7 +213,8 @@ sudo apt update
 sudo apt install -y make build-essential libssl-dev zlib1g-dev \
 libbz2-dev libreadline-dev libsqlite3-dev wget curl llvm \
 libncurses5-dev libncursesw5-dev xz-utils tk-dev \
-libffi-dev liblzma-dev python3-openssl git
+libffi-dev liblzma-dev python3-openssl git \
+libmysqlclient-dev pkg-config python3-dev
 
 # Step 2: Install pyenv
 curl https://pyenv.run | bash
@@ -244,8 +271,8 @@ if check_folder "/root/edge-node-auth-service"; then
 
     # Create the .env file with required variables
     cat <<EOL > /root/edge-node-auth-service/.env
-SECRET="KFRtB9qi8Npkd6fHOe6rx0jis5"
-JWT_SECRET="q2qhYVzkOMlJ51y8JAahWpzBB2PaCU5qe"
+SECRET="$(openssl rand -hex 64)"
+JWT_SECRET="$(openssl rand -hex 64)"
 NODE_ENV=development
 DB_USERNAME=root
 DB_PASSWORD=otnodedb
@@ -263,6 +290,20 @@ EOL
     # Setup database
     yes | npx sequelize-cli db:migrate
     yes | npx sequelize-cli db:seed:all
+
+    SQL_FILE="/root/edge-node-auth-service/UserConfig.sql"
+    TEMP_SQL_FILE="/root/edge-node-auth-service/UserConfig_temp.sql"
+
+    # Replace 'localhost' with SERVER_IP in SQL file
+    sed "s/localhost/$SERVER_IP/g" "$SQL_FILE" > "$TEMP_SQL_FILE"
+
+    # Execute SQL file on MySQL database
+    mysql -u "root" -p"otnodedb" "edge-node-auth-service" < "$TEMP_SQL_FILE"
+
+    # Clean up temp file
+    rm "$TEMP_SQL_FILE"
+
+    echo "User config updated successfully."
 fi
 
 
@@ -294,7 +335,7 @@ UI_SSL=false
 EOL
 
     # Install dependencies
-    nvm exec 22.9.0 npm install
+    nvm exec 20.18.2 npm install
 
     # Setup database
     npx sequelize-cli db:migrate
@@ -311,13 +352,13 @@ if check_folder "/var/www/edge-node-ui"; then
 
     # Create the .env file with required variables
     cat <<EOL > /var/www/edge-node-ui/.env
-VITE_APP_URL=http://localhost:5173
+VITE_APP_URL="http://$SERVER_IP"
 VITE_APP_NAME="Edge Node"
 VITE_AUTH_ENABLED=true
 VITE_AUTH_SERVICE_ENDPOINT=http://$SERVER_IP:3001
 VITE_EDGE_NODE_BACKEND_ENDPOINT=http://$SERVER_IP:3002
 VITE_CHATDKG_API_BASE_URL=http://$SERVER_IP:5002
-VITE_APP_ID=radiant
+VITE_APP_ID=edge_node
 BASE_URL=http://$SERVER_IP
 EOL
 
@@ -396,15 +437,15 @@ DB_NAME="ka_mining_api_logging"
 DAG_FOLDER_NAME="/root/ka-mining-api/dags"
 AUTH_ENDPOINT=http://$SERVER_IP:3001
 
-OPENAI_API_KEY=
-HUGGINGFACE_API_KEY=""
-UNSTRUCTURED_API_URL=""
+OPENAI_API_KEY="$OPENAI_API_KEY"
+HUGGINGFACE_API_KEY="$HUGGINGFACE_API_KEY"
+UNSTRUCTURED_API_URL="$UNSTRUCTURED_API_URL"
 
-ANTHROPIC_API_KEY=""
-BIONTOLOGY_KEY=""
-MILVUS_USERNAME=""
-MILVUS_PASSWORD=""
-MILVUS_URI=""
+ANTHROPIC_API_KEY="$ANTHROPIC_API_KEY"
+BIONTOLOGY_KEY="$BIONTOLOGY_KEY"
+MILVUS_USERNAME="$MILVUS_USERNAME"
+MILVUS_PASSWORD="$MILVUS_PASSWORD"
+MILVUS_URI="$MILVUS_URI"
 EOL
 fi
 
@@ -433,6 +474,7 @@ sed -i \
 -e 's|^max_active_tasks_per_dag *=.*|max_active_tasks_per_dag = 16|' \
 -e 's|^max_active_runs_per_dag *=.*|max_active_runs_per_dag = 16|' \
 -e 's|^enable_xcom_pickling *=.*|enable_xcom_pickling = True|' \
+-e 's|^load_examples *=.*|load_examples = False|' \
 /root/airflow/airflow.cfg
 
 
@@ -455,6 +497,12 @@ Group=root
 [Install]
 WantedBy=multi-user.target
 EOL
+
+# Unpause DAGS
+for dag_file in dags/*.py; do
+    dag_name=$(basename "$dag_file" .py)
+    airflow dags unpause "$dag_name"
+done
 
 # Enable and start the service
 systemctl daemon-reload
@@ -601,5 +649,6 @@ systemctl status airflow-scheduler.service
 systemctl status airflow-webserver.service
 systemctl status drag-api.service
 source ~/.bashrc
+otnode-restart
 
 
