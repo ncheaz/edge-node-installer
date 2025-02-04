@@ -649,6 +649,6 @@ systemctl status airflow-scheduler.service
 systemctl status airflow-webserver.service
 systemctl status drag-api.service
 source ~/.bashrc
-otnode-restart
+systemctl restart otnode.service
 
 
