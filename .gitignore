@@ -2,3 +2,4 @@
 .env
 temp-mysql.sh
 test-installer.sh
+.DS_Store
