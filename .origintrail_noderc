@@ -29,8 +29,8 @@
       "implementation": {
         "otp:20430": {
           "config": {
-            "nodeName": "Stevan-node",
-            "operatorFee": 2,
+            "nodeName": "",
+            "operatorFee": 0,
             "evmManagementWalletPublicKey": "",
             "operationalWallets": [
               {
@@ -43,8 +43,22 @@
         },
         "gnosis:10200": {
           "config": {
-            "nodeName": "Stevan-node",
-            "operatorFee": 2,
+            "nodeName": "",
+            "operatorFee": 0,
+            "evmManagementWalletPublicKey": "",
+            "operationalWallets": [
+              {
+                "evmAddress": "",
+                "privateKey": ""
+              }
+            ]
+          },
+          "enabled": true
+        },
+        "base:84532": {
+          "config": {
+            "nodeName": "",
+            "operatorFee": 0,
             "evmManagementWalletPublicKey": "",
             "operationalWallets": [
               {
