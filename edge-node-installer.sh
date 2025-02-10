@@ -406,11 +406,11 @@ DB_DIALECT=mysql
 AUTH_ENDPOINT=http://$SERVER_IP:3001
 EOL
 
-    # Exec migrations
-    npx sequelize-cli db:migrate
-
     # Install dependencies
     nvm exec 22.9.0 npm install
+
+    # Exec migrations
+    npx sequelize-cli db:migrate
 fi
 
 
