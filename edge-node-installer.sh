@@ -649,6 +649,11 @@ systemctl status airflow-scheduler.service
 systemctl status airflow-webserver.service
 systemctl status drag-api.service
 source ~/.bashrc
+echo "======== RESTARTING SERVICES ==========="
 systemctl restart otnode.service
+systemctl restart ka-mining-api
+systemctl restart airflow-scheduler
+systemctl restart edge-node-backend
+systemctl restart auth-service
 
 
