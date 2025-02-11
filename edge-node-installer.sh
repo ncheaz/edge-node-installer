@@ -503,7 +503,7 @@ EOL
 # Unpause DAGS
 for dag_file in dags/*.py; do
     dag_name=$(basename "$dag_file" .py)
-    airflow dags unpause "$dag_name"
+    /root/ka-mining-api/.venv/bin/airflow dags unpause "$dag_name"
 done
 
 # Enable and start the service
