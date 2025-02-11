@@ -644,11 +644,12 @@ systemctl start drag-api
 
 
 # ------- CHECK STATUSES OF ALL SERVICES -------
-systemctl status auth-service.service
-systemctl status ka-mining-api.service
-systemctl status airflow-scheduler.service
-systemctl status airflow-webserver.service
-systemctl status drag-api.service
+systemctl status auth-service.service --no-pager || true
+systemctl status ka-mining-api.service --no-pager || true
+systemctl status airflow-scheduler.service --no-pager || true
+systemctl status airflow-webserver.service --no-pager || true
+systemctl status drag-api.service --no-pager || true
+systemctl status otnode --no-pager || true
 source ~/.bashrc
 echo "======== RESTARTING SERVICES ==========="
 sleep 10
