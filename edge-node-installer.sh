@@ -100,6 +100,7 @@ echo "alias otnode-stop='systemctl stop otnode.service'" >> ~/.bashrc
 echo "alias otnode-start='systemctl start otnode.service'" >> ~/.bashrc
 echo "alias otnode-logs='journalctl -u otnode --output cat -f'" >> ~/.bashrc
 echo "alias otnode-config='nano ~/ot-node/.origintrail_noderc'" >> ~/.bashrc
+echo "alias edge-node-restart='systemctl restart auth-service && systemctl restart edge-node-backend && systemctl restart ka-mining-api && systemctl restart airflow-scheduler && systemctl restart drag-api'" >> ~/.bashrc
 
 # Installing prereqs
 export DEBIAN_FRONTEND=noninteractive
@@ -118,11 +119,11 @@ export NVM_DIR="$HOME/.nvm"
 [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
 # This loads nvm bash_completion
 [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"
-nvm install 20 > /dev/null 2>&1
-nvm use 20 > /dev/null 2>&1
+nvm install 20.18.2 > /dev/null 2>&1
+nvm use 20.18.2 > /dev/null 2>&1
 
 # Set nodejs v20.18.0 as default and link node to /usr/bin/
-nvm alias default 20 > /dev/null 2>&1
+nvm alias default 20.18.2 > /dev/null 2>&1
 sudo ln -s $(which node) /usr/bin/ > /dev/null 2>&1
 sudo ln -s $(which npm) /usr/bin/ > /dev/null 2>&1
 
@@ -624,6 +625,7 @@ cat <<EOL > /etc/systemd/system/drag-api.service
 [Unit]
 Description=dRAG API Service
 After=network.target
+
 
 [Service]
 ExecStart=/root/.nvm/versions/node/v22.9.0/bin/node /root/drag-api/server.js
