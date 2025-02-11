@@ -397,13 +397,14 @@ if check_folder "/root/drag-api"; then
     cat <<EOL > /root/drag-api/.env
 SERVER_PORT=5002
 NODE_ENV=production
-OT_NODE_HOSTNAME=""
 DB_USER="root"
 DB_PASS="otnodedb"
 DB_HOST=127.0.0.1
 DB_NAME=drag_logging
 DB_DIALECT=mysql
 AUTH_ENDPOINT=http://$SERVER_IP:3001
+UI_ENDPOINT="http://$SERVER_IP"
+OPENAI_API_KEY="$OPENAI_API_KEY"
 EOL
 
     # Install dependencies
