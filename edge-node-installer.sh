@@ -397,20 +397,21 @@ if check_folder "/root/drag-api"; then
     cat <<EOL > /root/drag-api/.env
 SERVER_PORT=5002
 NODE_ENV=production
-OT_NODE_HOSTNAME=""
 DB_USER="root"
 DB_PASS="otnodedb"
 DB_HOST=127.0.0.1
 DB_NAME=drag_logging
 DB_DIALECT=mysql
 AUTH_ENDPOINT=http://$SERVER_IP:3001
+UI_ENDPOINT="http://$SERVER_IP"
+OPENAI_API_KEY="$OPENAI_API_KEY"
 EOL
-
-    # Exec migrations
-    npx sequelize-cli db:migrate
 
     # Install dependencies
     nvm exec 22.9.0 npm install
+
+    # Exec migrations
+    npx sequelize-cli db:migrate
 fi
 
 
@@ -643,12 +644,25 @@ systemctl start drag-api
 
 
 # ------- CHECK STATUSES OF ALL SERVICES -------
-systemctl status auth-service.service
-systemctl status ka-mining-api.service
-systemctl status airflow-scheduler.service
-systemctl status airflow-webserver.service
-systemctl status drag-api.service
+systemctl status auth-service.service --no-pager || true
+systemctl status ka-mining-api.service --no-pager || true
+systemctl status airflow-scheduler.service --no-pager || true
+systemctl status airflow-webserver.service --no-pager || true
+systemctl status drag-api.service --no-pager || true
+systemctl status otnode --no-pager || true
 source ~/.bashrc
+echo "======== RESTARTING SERVICES ==========="
+sleep 10
+systemctl is-enabled otnode.service
+systemctl is-enabled ka-mining-api
+systemctl is-enabled airflow-scheduler
+systemctl is-enabled edge-node-backend
+systemctl is-enabled auth-service
+
 systemctl restart otnode.service
+systemctl restart ka-mining-api
+systemctl restart airflow-scheduler
+systemctl restart edge-node-backend
+systemctl restart auth-service
 
 
