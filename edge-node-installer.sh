@@ -169,7 +169,7 @@ sudo ln -s $(which npm) /usr/bin/ > /dev/null 2>&1
 
 #Setup MySql
     apt install tcllib mysql-server -y
-    mysql -u root -p -e "ALTER USER 'root'@'localhost' IDENTIFIED WITH mysql_native_password BY '';"
+    mysql -u root -p"$SQL_PASSWORD" -e "ALTER USER 'root'@'localhost' IDENTIFIED WITH mysql_native_password BY '';"
     mysql -u root -e "CREATE DATABASE operationaldb /*\!40100 DEFAULT CHARACTER SET utf8 */;"
     mysql -u root -e "CREATE DATABASE \`edge-node-auth-service\`"
     mysql -u root -e "CREATE DATABASE \`edge-node-backend\`;"
