@@ -57,7 +57,7 @@ For more details on the DKG Edge Node, visit the official documentation [here](h
 
 <br/>
 
-## 📚 About The Project
+## About The Project
 
 <details open>
 <summary>
@@ -193,7 +193,7 @@ The OriginTrail SDK libraries are being built in various languages by the team a
 <br/>
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
-## 📄 License
+## License
 
 Distributed under the Apache-2.0 License. See `LICENSE` file for more information.
 
@@ -201,7 +201,7 @@ Distributed under the Apache-2.0 License. See `LICENSE` file for more informatio
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
-## 🤝 Contributing
+## Contributing
 
 Contributions are what make the open source community such an amazing place to learn, inspire, and create. Any contributions you make are **greatly appreciated**.
 
@@ -221,7 +221,7 @@ Don't forget to give the project a star! Thanks again!
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
-## 📰 Social Media
+## Social Media
 
 <br/>
 
