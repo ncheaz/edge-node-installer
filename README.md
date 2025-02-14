@@ -90,7 +90,9 @@ The OriginTrail DKG V8 network is comprised of two types of DKG nodes - Core Nod
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 <br/>
 
-## Prerequisites
+## Getting started
+
+### Prerequisites
 
 Before proceeding, ensure your system meets the following requirements:
 
