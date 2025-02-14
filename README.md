@@ -28,24 +28,22 @@
   </summary>
   <ol>
     <li>
-      <a href="📚-about-the-project">📚 About The Project</a>
+      <a href="about-the-project">📚 About The Project</a>
         <ul><li><a href="#what-is-the-decentralized-knowledge-graph">What is the Decentralized Knowledge Graph?</a></li>
         <li><a href="#what-is-the-difference-between-a-core-node-and-an-edge-node">What is the difference between a Core Node and an Edge Node?</a></li>
-        <li><a href="#the-origintrail-dkg-architecture">The OriginTrail DKG Architecture</a></li>
-        <li><a href="#what-is-a-knowledge-asset">What is a Knowledge Asset?</a></li>
       </ul>
     </li>
     <li>
-      <a href="🚀-getting-started">🚀 Getting Started</a>
+      <a href="getting-started">🚀 Getting Started</a>
       <ul>
         <li><a href="#prerequisites">Prerequisites</a></li>
         <li><a href="#edge-node-setup">Edge Node Setup</a></li>
         <li><a href="#build-on-dkg">Build on DKG</a></li>
       </ul>
     </li>
-    <li><a href="📄-license">📄 License</a></li>
-    <li><a href="🤝-contributing">🤝 Contributing</a></li>
-    <li><a href="📰-social-media">📰 Social Media</a></li>
+    <li><a href="license">📄 License</a></li>
+    <li><a href="contributing">🤝 Contributing</a></li>
+    <li><a href="social-media">📰 Social Media</a></li>
   </ol>
 </details>
 
@@ -89,87 +87,6 @@ OriginTrail Decentralized Knowledge Graph (DKG), hosted on the OriginTrail Decen
 
 The OriginTrail DKG V8 network is comprised of two types of DKG nodes - Core Nodes, which form the DKG network core and host the DKG, and Edge Nodes, which run on edge devices and connect to the network core. The current beta version is designed to operate on edge devices running Linux and MacOS, with future support for a wide range of edge devices such as mobile phones, wearables, IoT devices, and generally enterprise environments. This enables large volumes of sensitive data to safely enter the AI age while maintaining privacy.
 </details>
-
-<details open>
-<summary>
-
-### **The OriginTrail DKG Architecture**
-
-</summary>
-
-<br/>
-
-The OriginTrail tech stack is a three layer structure, consisting of the multi-chain consensus layer (OriginTrail layer 1, running on multiple blockchains), the Decentralized Knowledge Graph layer (OriginTrail Layer 2, hosted on the ODN) and Trusted Knowledge applications in the application layer.
-
-<div align="center">
-    <img src="images/dkg-architecture.png" alt="DKG Architecture" width="400">
-</div>
-
-Further, the architecture differentiates between **the public, replicated knowledge graph** shared by all network nodes according to the protocol, and **private Knowledge graphs** hosted separately by each of the OriginTrail nodes.
-
-**Anyone can run an OriginTrail node and become part of the ODN, contributing to the network capacity and hosting the OriginTrail DKG. The OriginTrail node is the ultimate data service for data and knowledge intensive Web3 applications and is used as the key backbone for trusted AI applications (see https://chatdkg.ai)**
-
-</details>
-
-<details open>
-<summary>
-
-### **What is a Knowledge Asset?**
-
-</summary>
-
-<br/>
-
-<div align="center">
-    <img src="images/ka.png" alt="Knowledge Asset" width="200">
-</div>
-
-**Knowledge Asset is the new, AI‑ready resource for the Internet**
-
-Knowledge Assets are verifiable containers of structured knowledge that live on the OriginTrail DKG and provide:
-
--   **Discoverability - UAL is the new URL**. Uniform Asset Locators (UALs, based on the W3C Decentralized Identifiers) are a new Web3 knowledge identifier (extensions of the Uniform Resource Locators - URLs) which identify a specific piece of knowledge and make it easy to find and connect with other Knowledge Assets.
--   **Ownership - NFTs enable ownership**. Each Knowledge Asset contains an NFT token that enables ownership, knowledge asset administration and market mechanisms.
--   **Verifiability - On-chain information origin and verifiable trail**. The blockchain tech increases trust, security, transparency, and the traceability of information.
-
-By their nature, Knowledge Assets are semantic resources (following the W3C Semantic Web set of standards), and through their symbolic representations inherently AI ready. See more at https://chatdkg.ai
-<br/>
-
-**Discover Knowledge Assets with the DKG Explorer:**
-
-<div align="center">
-    <table>
-        <tr>
-            <td align="center">
-                <a href="https://dkg.origintrail.io/explore?ual=did:dkg:otp/0x5cac41237127f94c2d21dae0b14bfefa99880630/309100">
-                  <img src="images/knowledge-assets-graph1.svg" width="300" alt="Knowledge Assets Graph 1">
-                </a>
-                <br><b>Supply Chains</b>
-            </td>
-            <td align="center">
-                <a href="https://dkg.origintrail.io/explore?ual=did:dkg:otp/0x5cac41237127f94c2d21dae0b14bfefa99880630/309285">
-                  <img src="images/knowledge-assets-graph2.svg" width="300" alt="Knowledge Assets Graph 2">
-                </a>
-                <br><b>Construction</b>
-            </td>
-            <td align="center">
-                <a href="https://dkg.origintrail.io/explore?ual=did:dkg:otp/0x5cac41237127f94c2d21dae0b14bfefa99880630/309222">
-                  <img src="images/knowledge-assets-graph3.svg" width="300" alt="Knowledge Assets Graph 3">
-                </a>
-                <br><b>Life sciences and healthcare</b>
-            </td>
-            <td align="center">
-                <a href="https://dkg.origintrail.io/explore?ual=did:dkg:otp/0x5cac41237127f94c2d21dae0b14bfefa99880630/308028">
-                  <img src="images/knowledge-assets-graph4.svg" width="300" alt="Knowledge Assets Graph 3">
-                </a>
-                <br><b>Metaverse</b>
-            </td>
-        </tr>
-    </table>
-</div>
-
-</details>
-
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 <br/>
 
@@ -278,7 +195,7 @@ The OriginTrail SDK libraries are being built in various languages by the team a
 
 ## 📄 License
 
-Distributed under the xxxxxxxxx License. See `LICENSE` file for more information.
+Distributed under the Apache-2.0 License. See `LICENSE` file for more information.
 
 <br/>
 
