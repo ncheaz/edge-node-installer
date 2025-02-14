@@ -28,22 +28,22 @@
   </summary>
   <ol>
     <li>
-      <a href="about-the-project">📚 About The Project</a>
+      <a href="#about-the-project">📚 About The Project</a>
         <ul><li><a href="#what-is-the-decentralized-knowledge-graph">What is the Decentralized Knowledge Graph?</a></li>
         <li><a href="#what-is-the-difference-between-a-core-node-and-an-edge-node">What is the difference between a Core Node and an Edge Node?</a></li>
       </ul>
     </li>
     <li>
-      <a href="getting-started">🚀 Getting Started</a>
+      <a href="#getting-started">🚀 Getting Started</a>
       <ul>
         <li><a href="#prerequisites">Prerequisites</a></li>
         <li><a href="#edge-node-setup">Edge Node Setup</a></li>
         <li><a href="#build-on-dkg">Build on DKG</a></li>
       </ul>
     </li>
-    <li><a href="license">📄 License</a></li>
-    <li><a href="contributing">🤝 Contributing</a></li>
-    <li><a href="social-media">📰 Social Media</a></li>
+    <li><a href="#license">📄 License</a></li>
+    <li><a href="#contributing">🤝 Contributing</a></li>
+    <li><a href="#social-media">📰 Social Media</a></li>
   </ol>
 </details>
 
