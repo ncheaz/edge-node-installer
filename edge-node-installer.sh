@@ -181,6 +181,7 @@ install_mysql() {
     mysql -u root -e "CREATE DATABASE \`edge-node-api\`;"
     mysql -u root -e "CREATE DATABASE drag_logging;"
     mysql -u root -e "CREATE DATABASE ka_mining_api_logging;"
+    mysql -u root -e "CREATE DATABASE airflow_db;"
     mysql -u root -e "ALTER USER 'root'@'localhost' IDENTIFIED WITH mysql_native_password BY '$DB_PASSWORD';"
     mysql -u root -p"$DB_PASSWORD" -e "flush privileges;"
     sed -i 's|max_binlog_size|#max_binlog_size|' /etc/mysql/mysql.conf.d/mysqld.cnf
