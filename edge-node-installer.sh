@@ -517,7 +517,7 @@ setup_ka_minging_api() {
 
         python3.11 -m venv .venv
         source .venv/bin/activate
-        pip install -r requirements.txt
+        pip install -r requirements.txt --no-cache-dir
 
         # Create the .env file with required variables
         cat <<EOL > /root/ka-mining-api/.env
