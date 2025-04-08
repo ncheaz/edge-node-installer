@@ -306,7 +306,7 @@ server {
     server_name _;
 
     location / {
-        try_files $uri $uri/ /index.html =404;
+       try_files $uri $uri/ /index.html;
     }
 
     access_log /opt/homebrew/var/log/nginx/access.log;
