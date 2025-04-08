@@ -28,7 +28,7 @@ install_mysql() {
     sleep 5
 
     # Setup MySQL root user password
-    mysql -u root -proot -e "
+    mysql -u root -e "
         ALTER USER 'root'@'localhost'
         IDENTIFIED WITH caching_sha2_password
         BY '${DB_PASSWORD}';
@@ -97,10 +97,8 @@ install_otnode() {
 
 
 setup() {
-    # Install Homebrew if not installed
     if ! command -v brew &>/dev/null; then
-        echo "Installing Homebrew..."
-        /usr/bin/env bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+        echo "❌ Brew must be installed to run this script."
     fi
 
     # Updating Homebrew and installing dependencies
@@ -113,12 +111,6 @@ setup() {
 
     # Start Redis
     brew install redis
-    RESPONSE=`redis-cli ping`
-    if [ "$RESPONSE" = "PONG" ]; then
-        echo "Redis is up and running."
-    else
-        echo "Failed to receive PONG from Redis."
-    fi
 
     if ! command -v nvm &>/dev/null; then
         export NVM_DIR="$HOME/.nvm"

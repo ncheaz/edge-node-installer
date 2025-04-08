@@ -14,10 +14,10 @@ EDGE_NODE_UI=/var/www/edge-node-ui
 
 # Load the configuration variables
 if [ -f .env ]; then
-  source .env
+    source .env
 else
-  echo "Config file not found!"
-  exit 1
+    echo "Config file not found. Make sure you have configured your .env file!"
+    exit 1
 fi
 
 source './common.sh'
@@ -68,7 +68,7 @@ install_mysql() {
     apt install tcllib mysql-server -y
 
     # Setup MySQL root user password
-    mysql -u root -proot -e "
+    mysql -u root -e "
         ALTER USER 'root'@'localhost'
         IDENTIFIED WITH caching_sha2_password
         BY '${DB_PASSWORD}';
@@ -80,7 +80,6 @@ install_mysql() {
     mysql -u root -p"$DB_PASSWORD" -e "CREATE DATABASE drag_logging;"
     mysql -u root -p"$DB_PASSWORD" -e "CREATE DATABASE ka_mining_api_logging;"
     mysql -u root -p"$DB_PASSWORD" -e "CREATE DATABASE airflow_db;"
-
 
     sed -i 's|max_binlog_size|#max_binlog_size|' /etc/mysql/mysql.conf.d/mysqld.cnf
     echo -e "disable_log_bin\nwait_timeout = 31536000\ninteractive_timeout = 31536000" >> /etc/mysql/mysql.conf.d/mysqld.cnf
