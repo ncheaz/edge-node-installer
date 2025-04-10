@@ -57,7 +57,14 @@ while true; do
 
     if (( i % 25 == 0 )); then
         # Check if the script is still running
-        PARENT_PID=$(ssh $REMOTE_USER@$REMOTE_HOST "pgrep -f $SCRIPT_NAME" 2>/dev/null)
+        if [ -z "$REMOTE_USER@$REMOTE_HOST" ]; then
+            PARENT_PID=$(pgrep -f $SCRIPT_NAME 2>/dev/null)
+        else 
+            # Check if the script is still running on the remote server
+            PARENT_PID=$(ssh $REMOTE_USER@$REMOTE_HOST "pgrep -f $SCRIPT_NAME" 2>/dev/null)
+        fi
+
+       
         
         if [ -z "$PARENT_PID" ]; then
             # Timeout to allow services to restart
