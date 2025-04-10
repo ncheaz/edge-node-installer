@@ -32,6 +32,11 @@ echo -e "   ${BOLD}Services status...${RESET} 🚀    "
 echo -e "${BOLD}===========================${RESET}\n"
 echo -e "\e[?25l"
 
+is_local=true
+if [ -n "$REMOTE_USER" ] && [ -n "$REMOTE_HOST" ]; then
+    is_local=false
+fi
+
 
 i=0
 while true; do
@@ -56,15 +61,11 @@ while true; do
     sleep 0.1
 
     if (( i % 25 == 0 )); then
-        # Check if the script is still running
-        if [ -z "$REMOTE_USER@$REMOTE_HOST" ]; then
-            PARENT_PID=$(pgrep -f $SCRIPT_NAME 2>/dev/null)
+        if [ "$is_local" == true ]; then
+            PARENT_PID=$(pgrep -f "$SCRIPT_NAME" 2>/dev/null)
         else 
-            # Check if the script is still running on the remote server
-            PARENT_PID=$(ssh $REMOTE_USER@$REMOTE_HOST "pgrep -f $SCRIPT_NAME" 2>/dev/null)
+            PARENT_PID=$(ssh "$REMOTE_USER@$REMOTE_HOST" "pgrep -f '$SCRIPT_NAME'" 2>/dev/null)
         fi
-
-       
         
         if [ -z "$PARENT_PID" ]; then
             # Timeout to allow services to restart
@@ -74,7 +75,12 @@ while true; do
             for idx in "${!SERVICES[@]}"; do
                 tput cup $((idx + 3)) 0
                 service="${SERVICES[$idx]}"
-                status=$(ssh -o BatchMode=yes -o ConnectTimeout=5 $REMOTE_USER@$REMOTE_HOST "systemctl is-active $service" 2>/dev/null)
+
+                if [ "$is_local" == true ]; then
+                    status=$(systemctl is-active "$service" 2>/dev/null)
+                else
+                    status=$(ssh -o BatchMode=yes -o ConnectTimeout=5 $REMOTE_USER@$REMOTE_HOST "systemctl is-active $service" 2>/dev/null)
+                fi
 
                 if [[ "$status" == "active" ]]; then
                     STATUS_TEXT=" ... ${GREEN}Active${RESET}"
