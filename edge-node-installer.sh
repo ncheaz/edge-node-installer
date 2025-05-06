@@ -8,7 +8,8 @@ else
   exit 1
 fi
 
-SERVER_IP="127.0.0.1"
+#SERVER_IP="127.0.0.1"
+SERVER_IP="192.168.2.82"
 OS=$(uname -s)
 if [ "$OS" == "Darwin" ]; then
     echo "Detected macOS"
@@ -41,7 +42,8 @@ fi
 
 # If SERVER_EXTERNAL_IP and SERVER_EXTERNAL_IP differ, 
 # set SERVER_IP to SERVER_EXTERNAL_IP
-SERVER_EXTERNAL_IP=$(curl -4 ifconfig.me)
+#SERVER_EXTERNAL_IP=$(curl -4 ifconfig.me)
+SERVER_EXTERNAL_IP=$SERVER_IP
 if [ "$SERVER_EXTERNAL_IP" != "$SERVER_IP" ] && [ "$DEPLOYMENT_MODE" = "production" ]; then
     SERVER_IP="$SERVER_EXTERNAL_IP"
 fi

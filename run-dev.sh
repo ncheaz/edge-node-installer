@@ -1,7 +1,9 @@
 #!/usr/bin/env bash
 
 EDGE_NODE_DIR="$HOME/edge_node"
+EDGE_NODE_DIR="$HOME/edge_node"
 OTNODE_DIR="$EDGE_NODE_DIR/ot-node"
+AIRFLOW_HOME=$EDGE_NODE_DIR/airflow
 
 AUTH_SERVICE=$EDGE_NODE_DIR/edge-node-auth-service/
 API=$EDGE_NODE_DIR/edge-node-api/
